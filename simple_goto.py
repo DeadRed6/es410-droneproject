@@ -116,9 +116,16 @@ print("Going towards first point for 10 seconds ...")
 point1 = LocationGlobalRelative(52.37419420, -1.56527820, 10)
 vehicle.simple_goto(point1)
 
+
+# This function returns a result in metres.
+while distance_to_point(point1) > 0.75:
+    #Change this to be a print-format function as in Python 3.
+    print("Approaching point with distance" + str(distance_to_point(point1)) + "m to go...")
+    time.sleep(1)
 # sleep so we can see the change in map
 # Without a wait we would have the next command immediately.
-time.sleep(15)
+print("Reached point 1 within acceptable range.")
+#time.sleep(15)
 
 print("Going towards second point for 10 seconds (groundspeed set to 10 m/s) ...")
 point2 = LocationGlobalRelative(52.37480830, -1.56521920, 10)
