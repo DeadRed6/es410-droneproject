@@ -6,6 +6,10 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+
+# For debugging have numpy display in non-scientific notation (easier to see when homography approximately identity)
+np.set_printoptions(suppress=True)
+
 def warpImages(img1, img2, H):
   rows1, cols1 = img1.shape[:2]
   rows2, cols2 = img2.shape[:2]
@@ -42,6 +46,8 @@ for img in path:
 #Use ORB detector to extract keypoints
 orb = cv2.ORB_create(nfeatures=20000)
 while True:
+  if len(img_list) == 0:
+    break
   img1=img_list.pop(0)
   img2=img_list.pop(0)
 # Find the key points and descriptors with ORB
@@ -56,7 +62,7 @@ while True:
 
 # Create a BFMatcher object to match descriptors
 # It will find all of the matching keypoints on two images
-  bf = cv2.BFMatcher_create(cv2.NORM_HAMMING)#NORM_HAMMING specifies the distance as a measurement of similarity between two descriptors
+  bf = cv2.BFMatcher_create(cv2.NORM_HAMMING2)#NORM_HAMMING specifies the distance as a measurement of similarity between two descriptors
 
 # Find matching points
   matches = bf.knnMatch(descriptors1, descriptors2,k=2)
@@ -71,7 +77,7 @@ while True:
         good.append(m)
 
 # Set minimum match condition
-  MIN_MATCH_COUNT = 5
+  MIN_MATCH_COUNT = 3
 
   if len(good) > MIN_MATCH_COUNT:
     
@@ -80,17 +86,32 @@ while True:
     dst_pts = np.float32([ keypoints2[m.trainIdx].pt for m in good]).reshape(-1,1,2)
 
     # Establish a homography
-    M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+    M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0) # Proposing change from RANSAC to USAC_MAGSAC
+    
+    # Ideally at this point the homography (i.e planar transform) should be pretty much identical to the identity matrix
+    
+    # Let's hack this so it is the identity matrix. 
+    
+    #M = np.eye(3)
     
     result = warpImages(img2, img1, M)
     
     img_list.insert(0,result)
+    print("Reinserting result composite (GOOD) with "+str(len(good))+" matches")
+    print("Resolution of composite image is "+str(result.shape[1])+" x "+str(result.shape[0]))
     
     if len(img_list)==1:
       break
     
   else:
     print("Failed to match with only "+str(len(good))+" matches")
+    # Reinsert the stitched image
+    print("Reinserting current composite image (BAD)")
+    plt.imshow(cv2.cvtColor(img1, cv2.COLOR_BGR2RGB )  )
+    plt.show()
+    img_list.insert(0,img1)
+    if len(img_list)==1:
+      break
 result = cv2.cvtColor(result, cv2.COLOR_BGR2RGB )  
 plt.imshow(result)
 plt.show()
