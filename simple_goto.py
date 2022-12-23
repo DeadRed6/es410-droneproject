@@ -12,8 +12,10 @@ Full documentation is provided at http://python.dronekit.io/examples/simple_goto
 
 from __future__ import print_function
 import time, math
+import pymavlink
 from dronekit import connect, VehicleMode, LocationGlobalRelative
 
+mavlink_connection_string = pymavlink.mavutil.mavlink_connection("udp:localhost:14550")
 
 # Set up option parsing to get connection string
 import argparse
@@ -50,7 +52,7 @@ def distance_to_point(point):
     
 def get_distance_metres(location_1, location_2):
     """
-    Returns the ground distance in metres between two LocationGlobal objects.
+    Returns the ground distance in metres between two LocationGlobalRelative objects.
     Modified from dronekit example documentation
     The final term deals with the earths curvature
 
@@ -106,47 +108,61 @@ def arm_and_takeoff(aTargetAltitude):
             break
         time.sleep(1)
 
+# Monitor the position of the drone, and move on to the next command once within a certain distance of the target
+# The time_seconds parameter is optional.
+def wait_for_arrival(location, wait_time_seconds=20):
+    print("Going to (%f, %f). Timeout after %d seconds." % (location.lat, location.lon, wait_time_seconds))
+    start_time = time.time()
+    # This function returns a result in metres.
+    distance = distance_to_point(location)
+    while distance > 0.75:
+        if(time.time() - start_time > wait_time_seconds):
+            print("Time for travel exceeded specified wait time of %d seconds at distance %dm remaining, continuing with next command." % (wait_time_seconds, distance))
+            break # Exit the loop
+        print("Approaching point with distance %dm remaining." % (distance))
+        time.sleep(1)
+        distance = distance_to_point(location)
+
+    if(distance < 0.75):
+        print("Reached point within acceptable range.")
+    return
+
+# Function to check if the flight controller acknowledged the command.
+# Unfortunately by the time this function is called, the message has already been sent.
+# Function not currently used, may need Threading.
+def wait_for_mission_ack(mavlink_connection_string):
+    while True:
+        # Wait for a message to be received
+        msg = mavlink_connection_string.recv_match(blocking=False, timeout=5)
+        if msg is not None:
+            # If the message is a MISSION_ACK message, return the message
+            if msg.get_type() == "MISSION_ACK":
+                return msg
+            # If the message is not a MISSION_ACK message, continue waiting
+            else:
+                continue
+
 
 arm_and_takeoff(10)
 
 print("Set default/target airspeed to 3")
 vehicle.airspeed = 3
 
-print("Going towards first point for 10 seconds ...")
 point1 = LocationGlobalRelative(52.37419420, -1.56527820, 10)
 vehicle.simple_goto(point1)
+wait_for_arrival(point1, 25)
 
-
-# This function returns a result in metres.
-while distance_to_point(point1) > 0.75:
-    #Change this to be a print-format function as in Python 3.
-    print("Approaching point with distance" + str(distance_to_point(point1)) + "m to go...")
-    time.sleep(1)
-# sleep so we can see the change in map
-# Without a wait we would have the next command immediately.
-print("Reached point 1 within acceptable range.")
-#time.sleep(15)
-
-print("Going towards second point for 10 seconds (groundspeed set to 10 m/s) ...")
 point2 = LocationGlobalRelative(52.37480830, -1.56521920, 10)
 vehicle.simple_goto(point2, groundspeed=10)
+wait_for_arrival(point2, 25)
 
-# sleep so we can see the change in map
-time.sleep(20)
-
-print("Going to point 3...")
 point3 = LocationGlobalRelative(52.37480010, -1.56431260, 10)
 vehicle.simple_goto(point3)
+wait_for_arrival(point3, 25)
 
-# sleep so we can see the change in map
-time.sleep(25)
-
-print("Going to point 4...")
 point4 = LocationGlobalRelative(52.37416480, -1.56435280, 10)
 vehicle.simple_goto(point4)
-
-# sleep so we can see the change in map
-time.sleep(20)
+wait_for_arrival(point4, 25)
 
 print("Returning to Launch")
 vehicle.mode = VehicleMode("RTL")
