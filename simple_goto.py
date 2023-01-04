@@ -13,6 +13,7 @@ Full documentation is provided at http://python.dronekit.io/examples/simple_goto
 from __future__ import print_function
 import time, math
 import pymavlink
+from helpers import WaypointParser
 from dronekit import connect, VehicleMode, LocationGlobalRelative
 
 mavlink_connection_string = pymavlink.mavutil.mavlink_connection("udp:localhost:14550")
@@ -111,6 +112,10 @@ def arm_and_takeoff(aTargetAltitude):
 # Monitor the position of the drone, and move on to the next command once within a certain distance of the target
 # The time_seconds parameter is optional.
 def wait_for_arrival(location, wait_time_seconds=20):
+    if location.lat == 0 and location.lon == 0:
+        print("Return to Launch engaged.")
+        return
+
     print("Going to (%f, %f). Timeout after %d seconds." % (location.lat, location.lon, wait_time_seconds))
     start_time = time.time()
     # This function returns a result in metres.
@@ -142,30 +147,23 @@ def wait_for_mission_ack(mavlink_connection_string):
             else:
                 continue
 
-
 arm_and_takeoff(10)
 
-print("Set default/target airspeed to 3")
-vehicle.airspeed = 3
+print("Set default/target airspeed to 6")
+vehicle.airspeed = 6
 
-point1 = LocationGlobalRelative(52.37419420, -1.56527820, 10)
-vehicle.simple_goto(point1)
-wait_for_arrival(point1, 25)
+parser = WaypointParser() #Default argument is './coordinates.waypoints'
+point = parser.get_next_waypoint()
+while point is not None:
+    
+    if point.lat == 0 and point.lon == 0:
+        vehicle.mode = VehicleMode("RTL")
 
-point2 = LocationGlobalRelative(52.37480830, -1.56521920, 10)
-vehicle.simple_goto(point2, groundspeed=10)
-wait_for_arrival(point2, 25)
+    vehicle.simple_goto(point)
+    wait_for_arrival(point, 25)
 
-point3 = LocationGlobalRelative(52.37480010, -1.56431260, 10)
-vehicle.simple_goto(point3)
-wait_for_arrival(point3, 25)
+    point = parser.get_next_waypoint()
 
-point4 = LocationGlobalRelative(52.37416480, -1.56435280, 10)
-vehicle.simple_goto(point4)
-wait_for_arrival(point4, 25)
-
-print("Returning to Launch")
-vehicle.mode = VehicleMode("RTL")
 
 # Close vehicle object before exiting script
 print("Close vehicle object")
