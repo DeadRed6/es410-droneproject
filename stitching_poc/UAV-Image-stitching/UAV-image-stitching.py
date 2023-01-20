@@ -36,10 +36,11 @@ def warpImages(img1, img2, H):
   return output_img
 #folfer containing images from drones, sorted by name 
 import glob
-path = sorted(glob.glob("*.png"))
+path = sorted(glob.glob("lores/*.png"))
 img_list = []
 for img in path:
-    n = cv2.imread(img)
+    n = cv2.pyrUp(cv2.pyrUp(cv2.imread(img)))
+    # n = cv2.imread(img)
     img_list.append(n)
 """Functions for stitching"""
 
@@ -77,7 +78,7 @@ while True:
         good.append(m)
 
 # Set minimum match condition
-  MIN_MATCH_COUNT = 3
+  MIN_MATCH_COUNT = 20
 
   if len(good) > MIN_MATCH_COUNT:
     
@@ -94,7 +95,11 @@ while True:
     
     #M = np.eye(3)
     
-    result = warpImages(img2, img1, M)
+    try:
+      result = warpImages(img2, img1, M)
+    except:
+      print("Failure")
+      break
     
     img_list.insert(0,result)
     print("Reinserting result composite (GOOD) with "+str(len(good))+" matches")
