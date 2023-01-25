@@ -1,16 +1,20 @@
 import cv2
 from time import sleep
 import glob
-image_paths = glob.glob('dji/*.jpg')
+# image_paths = glob.glob('dji/*.jpg')
+image_paths = glob.glob('stitching_poc/UAV-Image-stitching/lores/*.png')
 # image_paths=['1.png','2.png','3.png']
 # initialized a list of images
 imgs = []
+
+print(image_paths)
 
 limit = 2
 #limit = len(image_paths)
  
 for i in range(limit):
-    imgs.append(cv2.imread(image_paths[i]))
+    # hir2 = cv2.pyrUp(hir1)
+    imgs.append(cv2.pyrUp(cv2.pyrUp(cv2.imread(image_paths[i]))))
     imgs[i]=cv2.resize(imgs[i],(0,0),fx=0.4,fy=0.4)
     # this is optional if your input images isn't too large
     # you don't need to scale down the image

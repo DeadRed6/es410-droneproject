@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
-import PIL
-img = cv2.imread("DJI_0221.JPG")
+# import PIL
+img = cv2.imread("stitching_poc/UAV-Image-stitching/lores/output_0002.png")
 
 hir1 = cv2.pyrUp(img)
 hir2 = cv2.pyrUp(hir1)
