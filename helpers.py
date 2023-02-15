@@ -49,7 +49,8 @@ class WaypointParser:
             self.next += 1
             return location
 
-#Print zeroes if the vehicle has no GPS lock, else print the absolute altitude
+#Print zeroes if the vehicle has no GPS lock, else print the coordinates
+#Altitude is relative to the home location
 def broadcast_gps(vehicle):
     location = vehicle.location.global_frame
     if(location.lat is None):
