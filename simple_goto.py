@@ -13,8 +13,9 @@ Full documentation is provided at http://python.dronekit.io/examples/simple_goto
 from __future__ import print_function
 import time, math
 import pymavlink
-from helpers import WaypointParser
-from dronekit import connect, VehicleMode, LocationGlobalRelative
+from helpers import WaypointParser, broadcast_gps
+from dronekit import connect, VehicleMode, LocationGlobalRelative, LocationGlobal
+import dronekit_sitl
 
 mavlink_connection_string = pymavlink.mavutil.mavlink_connection("udp:localhost:14550")
 
@@ -26,20 +27,25 @@ parser.add_argument('--connect',
 args = parser.parse_args()
 
 connection_string = args.connect
-sitl = None
+sitl = dronekit_sitl.SITL()
 
 
 # Start SITL if no connection string specified
 if not connection_string:
     print('Starting SITL...')
-    import dronekit_sitl
-    sitl = dronekit_sitl.start_default()
+    sitl.download('copter', '3.3', verbose=True)
+    sitl_args = ['-I0', '--model', 'quad', '--home=52.374177,-1.5648406,0,180']
+    sitl.launch(sitl_args, await_ready=True, restart=True)
+    #sitl = dronekit_sitl.start_default()
     connection_string = sitl.connection_string()
 
 
 # Connect to the Vehicle
 print('Connecting to vehicle on: %s' % connection_string)
 vehicle = connect(connection_string, wait_ready=True)
+#print('Setting home location to 52.374177, -1.5648406')
+#Setting the value will fail silently if the specified location is more than 50km from the EKF origin.
+#vehicle.home_location = LocationGlobal(52.374177, -1.5648406, 80.0)
 
 #Derived partially from https://github.com/willgower/es410_autonomous_drone/blob/master/raspberry_pi/flight_controller.py
 #TODO: Split this code off into utility functions
@@ -125,6 +131,7 @@ def wait_for_arrival(location, wait_time_seconds=20):
             print("Time for travel exceeded specified wait time of %d seconds at distance %dm remaining, continuing with next command." % (wait_time_seconds, distance))
             break # Exit the loop
         print("Approaching point with distance %dm remaining." % (distance))
+        broadcast_gps(vehicle)
         time.sleep(1)
         distance = distance_to_point(location)
 

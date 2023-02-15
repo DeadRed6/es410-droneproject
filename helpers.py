@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from dronekit import LocationGlobalRelative
+from datetime import datetime
 
 class WaypointParser:
     def __init__(self, filepath='./coordinates.waypoints'):
@@ -48,6 +49,13 @@ class WaypointParser:
             self.next += 1
             return location
 
+#Print zeroes if the vehicle has no GPS lock, else print the absolute altitude
+def broadcast_gps(vehicle):
+    location = vehicle.location.global_frame
+    if(location.lat is None):
+        print("[%s] lat=0.0 lon=0.0 alt=0.0" % (datetime.now()))
+    else:
+        print("[%s] lat=%s lon=%s alt=%s" % (datetime.now(), location.lat, location.lon, location.alt))
 
 # Uncomment this code if you want to test the class, simply run `python3 WaypointParser.py`
 # def main():
