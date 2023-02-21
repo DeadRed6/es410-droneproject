@@ -24,7 +24,7 @@ mavlink_connection_string = pymavlink.mavutil.mavlink_connection("udp:localhost:
 import argparse
 parser = argparse.ArgumentParser(description='Commands vehicle using vehicle.simple_goto.')
 parser.add_argument('--connect',
-                    help="Vehicle connection target string. If not specified, SITL automatically started and used.")
+                    help="Vehicle connection target string, e.g. udp:localhost:14550 or /dev/tty/ACM0. If not specified, SITL automatically started and used.")
 args = parser.parse_args()
 
 connection_string = args.connect
@@ -129,7 +129,7 @@ def wait_for_arrival(location, wait_time_seconds=20):
             print("Time for travel exceeded specified wait time of %d seconds at distance %dm remaining, continuing with next command." % (wait_time_seconds, distance))
             break # Exit the loop
         print("Approaching point with distance %dm remaining." % (distance))
-        broadcast_gps(vehicle)
+        helpers.broadcast_gps(vehicle)
         time.sleep(1)
         distance = distance_to_point(location)
 
@@ -163,7 +163,6 @@ while point is not None:
     
     if point.lat == 0 and point.lon == 0:
         vehicle.mode = VehicleMode("RTL")
-        time.sleep(25)
         break
 
     vehicle.simple_goto(point)
@@ -171,8 +170,6 @@ while point is not None:
 
     point = parser.get_next_waypoint()
 
-#Should have landed by this point.
-vehicle.armed = False
 
 # Close vehicle object before exiting script
 print("Close vehicle object")
