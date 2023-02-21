@@ -13,7 +13,8 @@ Full documentation is provided at http://python.dronekit.io/examples/simple_goto
 from __future__ import print_function
 import time, math
 import pymavlink
-from helpers import WaypointParser, broadcast_gps
+import helpers
+#from helpers import WaypointParser, broadcast_gps
 from dronekit import connect, VehicleMode, LocationGlobalRelative, LocationGlobal
 import dronekit_sitl
 
@@ -34,7 +35,7 @@ sitl = dronekit_sitl.SITL()
 if not connection_string:
     print('Starting SITL...')
     sitl.download('copter', '3.3', verbose=True)
-    sitl_args = ['-I0', '--model', 'quad', '--home=52.374177,-1.5648406,0,180']
+    sitl_args = ['-I0', '--model', 'quad', '--home=52.37400919,-1.5657824,0,180']
     sitl.launch(sitl_args, await_ready=True, restart=True)
     #sitl = dronekit_sitl.start_default()
     connection_string = sitl.connection_string()
@@ -43,9 +44,6 @@ if not connection_string:
 # Connect to the Vehicle
 print('Connecting to vehicle on: %s' % connection_string)
 vehicle = connect(connection_string, wait_ready=True)
-#print('Setting home location to 52.374177, -1.5648406')
-#Setting the value will fail silently if the specified location is more than 50km from the EKF origin.
-#vehicle.home_location = LocationGlobal(52.374177, -1.5648406, 80.0)
 
 #Derived partially from https://github.com/willgower/es410_autonomous_drone/blob/master/raspberry_pi/flight_controller.py
 #TODO: Split this code off into utility functions
@@ -159,18 +157,22 @@ arm_and_takeoff(10)
 print("Set default/target airspeed to 6")
 vehicle.airspeed = 6
 
-parser = WaypointParser() #Default argument is './coordinates.waypoints'
+parser = helpers.WaypointParser() #Default argument is './coordinates.waypoints'
 point = parser.get_next_waypoint()
 while point is not None:
     
     if point.lat == 0 and point.lon == 0:
         vehicle.mode = VehicleMode("RTL")
+        time.sleep(25)
+        break
 
     vehicle.simple_goto(point)
     wait_for_arrival(point, 25)
 
     point = parser.get_next_waypoint()
 
+#Should have landed by this point.
+vehicle.armed = False
 
 # Close vehicle object before exiting script
 print("Close vehicle object")
