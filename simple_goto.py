@@ -157,7 +157,7 @@ arm_and_takeoff(10)
 print("Set default/target airspeed to 6")
 vehicle.airspeed = 6
 
-parser = helpers.WaypointParser() #Default argument is './coordinates.waypoints'
+parser = helpers.WaypointParser() #Default argument is './waypoint_files/rugbypitch2.waypoints'
 point = parser.get_next_waypoint()
 while point is not None:
     

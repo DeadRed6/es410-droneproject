@@ -4,7 +4,7 @@ from dronekit import LocationGlobalRelative
 from datetime import datetime
 
 class WaypointParser:
-    def __init__(self, filepath='./rugbypitch2.waypoints'):
+    def __init__(self, filepath='./waypoint_files/rugbypitch2.waypoints'):
         self.filepath = filepath
         self.waypoints = [] # Will be of type pandas.DataFrame
         self.next = 1 # Stores the next waypoint, starting at 1 since 0 is the home location
