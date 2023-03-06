@@ -11,7 +11,7 @@ print(image_paths)
 
 limit = 2
 #limit = len(image_paths)
- 
+
 for i in range(limit):
     # hir2 = cv2.pyrUp(hir1)
     imgs.append(cv2.pyrUp(cv2.pyrUp(cv2.imread(image_paths[i]))))
@@ -39,7 +39,7 @@ for i in range(1,limit):
     stitchy=cv2.Stitcher.create()
     print("Attempting stitch for images "+str(i-1)+" and "+str(i))
     (dummy,output)=stitchy.stitch(imgs)
- 
+
     if dummy != cv2.STITCHER_OK:
     # checking if the stitching procedure is successful
     # .stitch() function returns a true value if stitching is
@@ -47,10 +47,9 @@ for i in range(1,limit):
         raise Exception("stitching ain't successful")
     else:
         print("Succeeded stitch for images "+str(i-1)+" and "+str(i))
- 
+
 print("Completed all stitches successfully")
 # final output
 cv2.imshow('final result',output)
- 
 cv2.waitKey(0)
 
