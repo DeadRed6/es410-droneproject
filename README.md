@@ -77,7 +77,10 @@ With Mission Planner open, connect to the vehicle with:
 
 ### Scripts/Usage
 
-> :warning: **INSERT DESCRIPTION HERE**
+> 'Image_Stitchingv1.py' Using image stitcher function from OpenCV to stitch images
+> 'ORB_stitching_bf.py'  Using the ORB algorithm with a brute force matcher to stitch images.
+> 'ORB_stitching_FLANN.py' Using the ORB algorithm with FLANN to stitch images (used as final project output).
+> 'SIFT_sttitching_FLANN.py' Using the SIFT algorithm with FLANN to stitch images
 
 
 ## legacy
