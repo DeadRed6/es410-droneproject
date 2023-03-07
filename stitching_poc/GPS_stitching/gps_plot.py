@@ -31,9 +31,9 @@ for i in range(len(images)-1):
     lat1, lon1 = gps_coords[i]
     lat2, lon2 = gps_coords[i+1]
     # Calculate distance between GPS coordinates using haversine formula
-    dx, dy = get_distance_haversine(lat1, lon1, lat2, lon2)  # convert to meters
-    overlap_x = int(FRAME_SIZE[0] - dx)  # calculate overlap in x-direction
-    overlap_y = int(FRAME_SIZE[1] - dy)  # calculate overlap in y-direction
+    dy, dx = get_distance_haversine(lat1, lon1, lat2, lon2)  # convert to meters
+    overlap_x = int(FRAME_SIZE[0]-(FRAME_SIZE[0] - dx))*100  # calculate overlap in x-direction, convert to cm
+    overlap_y = int(FRAME_SIZE[1]-(FRAME_SIZE[1] - dy))*100  # calculate overlap in y-direction, convert to cm
     overlaps.append((overlap_x, overlap_y))  # append overlaps to a list
 
 # Create empty canvas for stitching images
@@ -47,12 +47,10 @@ for i, img in enumerate(images):
         canvas[x_offset:x_offset+img.shape[0], y_offset:y_offset+img.shape[1]] = img
     else:
         overlap_x, overlap_y = overlaps[i-1]  # get overlap values for previous image
-        x_offset = overlap_x  # update x offset by overlap value
-        y_offset = overlap_y  # update y offset by overlap value
+        x_offset += overlap_x  # update x offset by overlap value
+        y_offset += overlap_y  # update y offset by overlap value
         canvas[x_offset:x_offset+img.shape[0], y_offset:y_offset+img.shape[1]] = img  # place image on canvas
-
 # Display the stitched image
 plt.imshow(canvas)
 plt.show()
-
 
