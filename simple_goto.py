@@ -1,11 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-
-# To be run on a Linux system.
 """
-© Copyright 2015-2016, 3D Robotics.
-simple_goto.py: GUIDED mode "simple goto" example (Copter Only)
+Adapted from example code on the DroneKit website, under the Apache License 2.0
 Demonstrates how to arm and takeoff in Copter and how to navigate to points using Vehicle.simple_goto.
 Full documentation is provided at http://python.dronekit.io/examples/simple_goto.html
 """
@@ -45,8 +40,6 @@ if not connection_string:
 print('Connecting to vehicle on: %s' % connection_string)
 vehicle = connect(connection_string, wait_ready=True)
 
-#Derived partially from https://github.com/willgower/es410_autonomous_drone/blob/master/raspberry_pi/flight_controller.py
-#TODO: Split this code off into utility functions
 #Arguments: The target point of type dronekit.LocationGlobalRelative
 def distance_to_point(point):
     try:
