@@ -42,9 +42,9 @@ With Mission Planner open, connect to the vehicle with:
 
 | Script name | Description |
 | --- | --- |
-| [camera_software](#camera_software) | :warning: **INSERT DESCRIPTION HERE** |
+| [camera_software](#camera_software) | Handles the capture of images with the thermal camera |
 | [legacy](#legacy) | Unused code |
-| [stitching_poc](#stitching_poc) | :warning: **INSERT DESCRIPTION HERE** |
+| [stitching_poc](#stitching_poc) | Proof of concepts of image stitching |
 
 ## camera_software
 
