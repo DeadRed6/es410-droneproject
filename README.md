@@ -69,13 +69,9 @@ With Mission Planner open, connect to the vehicle with:
 
 [:arrow_up: Back to folder overview](#folder-overview)
 
-> :warning: **INSERT DESCRIPTION HERE**
+Various approaches to image stitching with various combinations of libraries, feature tagging algorithms, and stitching algorithms
 
-### Prerequisites
-
-> :warning: **THIS FOLDER DOES NOT APPEAR TO CONTAIN A REQUIREMENTS.TXT FILE**
-
-### Scripts/Usage
+### Scripts
 
 - `Image_Stitchingv1.py` Using image stitcher function from OpenCV to stitch images.
 - `ORB_stitching_bf.py`  Using the ORB algorithm with a brute force matcher to stitch images.
