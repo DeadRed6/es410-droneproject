@@ -52,15 +52,12 @@ With Mission Planner open, connect to the vehicle with:
 
 [:arrow_up: Back to folder overview](#folder-overview)
 
-> :warning: **INSERT DESCRIPTION HERE**
+This folder contains python files from [GroupGets' GitHub repo](https://github.com/groupgets/purethermal1-uvc-capture/tree/master) detailing how to interact with the PureThermal 3 I/O module.
 
-### Prerequisites
-
-> :warning: **THIS FOLDER DOES NOT APPEAR TO CONTAIN A REQUIREMENTS.TXT FILE**
 
 ### Scripts/Usage
 
-> :warning: **INSERT DESCRIPTION HERE**
+For details on scripts/usage in this folder, please see the [GroupGets' GitHub repo ReadMe](https://github.com/groupgets/purethermal1-uvc-capture/blob/master/readme.md). These files have been edited for use in a graphical user interface [in the DronePi GUI repo](https://github.com/sftgunner/dronepi-gui). Please refer to this repo for how these files were utilised in the scope of this project.
 
 
 ## stitching_poc
